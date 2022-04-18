@@ -1,0 +1,34 @@
+#foreach($item in $context.result.items) 
+    #if(!$item.revenue_share)
+        $util.qr($item.put("revenue_share", "0"))
+    #end
+    #if(!$item.earnings)
+        $util.qr($item.put("earnings", "0"))
+    #end
+    #if(!$item.overall_rating)
+        $util.qr($item.put("overall_rating", "0"))
+    #end
+    #if(!$item.your_clients_rating)
+        $util.qr($item.put("your_clients_rating", "0"))
+    #end
+    #if(!$item.active)
+        $util.qr($item.put("active", false))
+    #end
+     #if(!$item.recommendations)
+        $util.qr($item.put("recommendations", "0"))
+    #end
+    #if(!$item.movingful_pay)
+        $util.qr($item.put("movingful_pay", false))
+    #end
+    #if(!$item.customer_referral)
+        $util.qr($item.put("customer_referral", 0))
+    #end
+    #if(!$item.created_at)
+        $util.qr($item.put("created_at", ""))
+    #end
+    #if(!$item.business_addr)
+        $util.qr($item.put("business_addr", ""))
+    #end
+#end
+
+$util.toJson($context.result.items)

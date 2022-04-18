@@ -1,0 +1,18 @@
+{
+    "version" : "2017-02-28",
+    "operation" : "UpdateItem",
+    "key" : {
+        "id" : $util.dynamodb.toDynamoDBJson($ctx.args.input.client_id)
+    },
+    "update" : {
+        "expression" : " set activity = list_append(if_not_exists(activity, :empty_list), :activity)",
+        "expressionValues" : {
+            ":empty_list":[],
+            ":activity" : [{
+                "status":$util.dynamodb.toDynamoDBJson($ctx.args.input.status),
+                "vendor_id":$util.dynamodb.toDynamoDBJson($ctx.identity.username),
+                "created_at":$util.time.nowISO8601()
+            }]
+        }
+    }
+}

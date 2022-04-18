@@ -1,0 +1,20 @@
+{
+    "version" : "2017-02-28",
+    "operation" : "PutItem",
+    "key" : {
+        "id": $util.dynamodb.toDynamoDBJson($util.autoId()),
+    },
+   "attributeValues":{
+       "vendor_id": $util.dynamodb.toDynamoDBJson($ctx.args.input.vendor_id),
+       "client_id": $util.dynamodb.toDynamoDBJson($ctx.args.input.client_id),
+       "comments": $util.dynamodb.toDynamoDBJson($ctx.args.input.comments),
+       "rating": $util.dynamodb.toDynamoDBJson($ctx.args.input.rating),
+       "created_at": $util.dynamodb.toDynamoDBJson($util.time.nowFormatted("yyyy-MM-dd", "America/Chicago"))
+   },
+    "condition": {
+        "expression": "attribute_not_exists(#id)",
+        "expressionNames": {
+        "#id": "id",
+        },
+    },
+}

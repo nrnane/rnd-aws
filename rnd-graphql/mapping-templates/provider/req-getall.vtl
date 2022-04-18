@@ -1,0 +1,11 @@
+{
+    "version": "2017-02-28",
+    "operation": "Scan",
+    "index" : "business_type_index",
+    "filter" : {
+        "expression" : "business_type = :business_type and attribute_exists(logo_url)",
+        "expressionValues" : {
+            ":business_type" : $util.dynamodb.toDynamoDBJson("${ctx.args.business_type}")
+        },
+    },
+}

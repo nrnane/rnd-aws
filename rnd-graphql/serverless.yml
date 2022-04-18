@@ -1,0 +1,133 @@
+service: rnd-graphql
+
+frameworkVersion: '2 || 3'
+
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  timeout: 15
+  profile: movingful
+  lambdaHashingVersion: 20201221
+
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - dynamodb:*
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - cognito-idp:*
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - logs:*
+      Resource: "*"
+    
+plugins:
+  - serverless-appsync-plugin
+  - serverless-plugin-split-stacks
+package:
+  exclude:
+    - package-lock.json
+    - package.json
+    - schema.graphql
+    - node_modules
+
+
+custom:
+  memSize:
+    dev: 128
+  stage: ${opt:stage, self:provider.stage}
+
+  splitStacks:
+    perType: true
+
+  appSync:
+    name: rnd-${self:custom.stage}
+    authenticationType: AMAZON_COGNITO_USER_POOLS
+    userPoolConfig:
+      awsRegion: ${self:provider.region}
+      defaultAction: ALLOW
+      userPoolId: ${cf:movingful-auth-${self:provider.stage}.CognitoUserPoolId}
+    apiKeys:
+      - name: publickApi # name of the api key
+        description: "This key can be used for public accessable queries"
+        expiresAfter: 365d
+    additionalAuthenticationProviders:
+      - authenticationType: API_KEY
+    logConfig:
+      loggingRoleArn: { "Fn::GetAtt": [RnDAppSyncServiceRole, Arn] }
+      level: ALL
+    mappingTemplatesLocation: mapping-templates
+    mappingTemplates: ${file(./mapping-templates.yml):mappingTemplates}
+    schema: schema.graphql
+    serviceRole: RnDAppSyncServiceRole
+    dataSources: ${file(./data-sources.yml):dataSources}
+resources:
+  Resources:
+    RnDAppSyncServiceRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        RoleName: RnDAppSyncServiceRole-${self:custom.stage}
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Service:
+                  - "appsync.amazonaws.com"
+              Action:
+                - "sts:AssumeRole"
+        Policies:
+          - PolicyName: "SNS-RnDAppSyncServiceRole-Policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - sns:*
+                  Resource: "*"
+          - PolicyName: "SecretsManager-RnDAppSyncServiceRole-Policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "secretsmanager:*"
+                  Resource:
+                    - "*"
+          - PolicyName: "CloudWatch-RnDAppSyncServiceRole-Policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - logs:*
+                  Resource: "*"
+          - PolicyName: "Dynamodb-RnDAppSyncServiceRole-Policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - dynamodb:*
+                  Resource: "*"
+          - PolicyName: "Lambda-RnDAppSyncServiceRole-Policy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - lambda:*
+                  Resource: "*"
+  # Outputs:
+  #   RnDAppSyncServiceRole:
+  #     Value:
+  #       - Ref: RnDAppSyncServiceRole.Arn

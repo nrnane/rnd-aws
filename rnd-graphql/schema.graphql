@@ -1,0 +1,531 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  getProviders(business_type: BusinessTypes): [Provider]
+  getProvider: Provider
+  getReviews: ClientReviews
+}
+
+enum UserTypes {
+  AMBSDR
+  VENDOR
+  CUSTMR
+}
+
+enum BusinessTypes {
+  MOVING
+  CLEANING
+  REALESTATE
+  LEASING
+  HOMESERVICES
+  PAINTING
+  LAWNCARE
+  ELECTRICITY
+  GAS
+  INTERNET_CABLE
+  PLUMBING
+  LANDSCAPING
+  SECURITY
+  HVAC
+  POOL_CLEANING
+  CARPENTER
+  HOME_RENOVATION
+  ELECTRICIAN
+  PEST_CONTROL
+}
+
+enum CurrentStatus {
+  PENDING
+  ENROLLED
+  BOOKED
+  COMPLETED
+  NO
+}
+
+type Resource {
+  file_name: String
+  get_url: String
+  put_url: String
+}
+
+type Payouts {
+  type: String
+  history: [PayoutsHistory]
+  box: Box
+}
+
+type PayoutsHistory {
+  amount: String
+  created_at: String
+  provider: Provider
+  client: ClientType
+  ambassador: Profile
+}
+
+type Profile {
+  id: ID!
+  first_name: String!
+  last_name: String!
+  phone_number: String!
+  comp_name: String!
+  comp_addr: String!
+  earnings: Earnings
+  vendors: [Provider]
+  clients: [ClientType]
+  updated_at: String
+  business_type: BusinessTypes
+  keep_my_commission: Boolean
+  is_account_ready: Boolean
+}
+
+
+type ProfileResponse @aws_api_key {
+  id: ID!
+  first_name: String!
+  last_name: String!
+  phone_number: String!
+  comp_name: String!
+  comp_addr: String!
+  earnings: Earnings
+  vendors: [ProviderResponse]
+  clients: [ClientResponse]
+  updated_at: String
+  business_type: BusinessTypes
+  keep_my_commission: Boolean
+  is_account_ready: Boolean
+}
+
+type Dashboard {
+  notifications: [Notifications]
+  box: Box
+  tiles: [Tiles]
+}
+type Notifications {
+  title: String
+}
+type Box {
+  title: String
+  amount: String
+  description: String
+  next_pay_date: String
+}
+type Tiles {
+  id: String
+  title: String
+  description: String
+  sub_heading: String
+}
+
+type Mutation {
+ 
+
+  createReview(input: ReviewInput!): Review @aws_api_key
+
+}
+
+
+input ReviewInput {
+  client_id: String
+  vendor_id: String
+  rating: Int
+  comments: String
+  created_at: String
+}
+
+type Review @aws_api_key{
+  id: String
+  client_id: String
+  vendor_id: String
+  rating: Int
+  comments: String
+  created_at: String
+}
+
+
+input UpdateTaskInput {
+  client_id: String,
+  business_type:BusinessTypes,
+  completed:Boolean,
+  notes:String,
+  vendor_id:String,
+  task_day:String
+  send_sms: Boolean
+}
+
+type UpdateTaskResponse @aws_api_key{
+  client_id: String,
+  business_type:BusinessTypes,
+  completed:Boolean,
+  notes:String,
+  vendor_id:String
+  task_day:String
+}
+
+input SuggestionInput {
+  client_id: String
+  business_type: String
+  vendors: [String]
+  vendor_id: String
+}
+
+
+
+input MoveDateInput {
+  move_date:String
+  client_id:String
+  meta_data: [MetaDataObjectInput]
+}
+
+type Vendor @aws_api_key {
+  id: String
+  business_type: String
+  contact_name: String
+  updated_at: String
+  created_by: String
+  phone_number: String
+  comp_name: String
+  logo_url: String
+  isPercentage: Boolean
+  revenue_share: String
+  reviews_count: String
+  reviews_rating: String
+  realtor_full_name: String
+  realtor_others: String
+  lead_source: Contacts
+  realtor_comp_name: String
+  business_text: BusinessText
+}
+
+input RedirectURL {
+  redirect_url: String
+}
+input URLs {
+  redirect_url: String
+  vendor_cancel_url: String
+}
+input CCInput {
+  name_on_card: String
+  card_number: String
+  mont_year: String
+  cvv: Int
+  zipcode: Int
+}
+input PaymentInput {
+  username: String
+  email: String
+}
+type PaymentResponse {
+  generated_link: String
+}
+
+type CCResponse {
+  message: String
+  isVerified: Boolean
+}
+
+type NextTaskClientResponse @aws_api_key {
+  type: String
+  title: String
+  subTitle: String
+  completed: Boolean
+}
+
+type RemainderResponse @aws_api_key {
+  message: String
+}
+
+input ClientInput {
+  id: String
+  full_name: String
+  phone: String
+  current_status: CurrentStatus
+  vendors: [String]
+  ambassadors: [String]
+  activity: [ActivityInput]
+  comp_name: String
+  keep_my_commission: Boolean
+  move_date: String
+  meta_data: [MetaDataObjectInput]
+}
+
+input MetaDataObjectInput {
+  key: String
+  value: String
+}
+
+type MetaDataObjectType {
+  key: String
+  value: String
+}
+
+type MetaDataObjectResponse @aws_api_key {
+  key: String
+  value: String
+}
+
+
+input AddVendorToClientInput {
+  client_id: String
+  vendor_id: String
+}
+
+input NextTaskClientInput {
+  client_id: String
+}
+
+input ActivityInput {
+  status: CurrentStatus
+  client_id: String
+  amount: String
+}
+
+type ClientType {
+  id: String
+  full_name: String
+  phone: String
+  sms_text: String
+  current_status: String
+  vendors: [Provider]
+  ambassadors: [Profile]
+  created_at: String
+  updated_at: String
+  activity: [Activity]
+  comp_name: String
+  keep_my_commission: Boolean
+  move_date: String
+  meta_data: [MetaDataObjectType]
+}
+
+type ClientResponse @aws_api_key {
+  id: String
+  full_name: String
+  phone: String
+  sms_text: String
+  current_status: String
+  vendors: [Vendor]
+  ambassadors: [ProfileResponse]
+  created_at: String
+  updated_at: String
+  activity: [Activity]
+  comp_name: String
+  keep_my_commission: Boolean
+  move_date: String
+  tasks: tasksType
+  meta_data: [MetaDataObjectResponse]
+}
+
+type tasksType @aws_api_key{
+  beforeMoveDay: [taskObject]
+  onMoveDay: [taskObject]
+  afterMoveDay: [taskObject]
+}
+
+type taskObject @aws_api_key {
+  type: String, 
+  vendor_id: String, 
+  desc: String, 
+  completed: Boolean, 
+  metaData: taskMetaData
+}
+
+type taskMetaData @aws_api_key{ 
+  phone:String, 
+  name:String,
+  address:String,
+  created_at:String
+}
+
+type Activity {
+  provider: Provider
+  created_at: String
+  status: CurrentStatus
+}
+
+type Earnings {
+  you: Int
+  discount: Int
+  community: Int
+}
+
+input EarningsInput {
+  you: Int
+  discount: Int
+  community: Int
+}
+
+input ContactsInput {
+  call: String
+  text: String
+  email: String
+  website: String
+}
+
+input RemainderInput {
+  client_id: String
+  date_time: String
+}
+
+type Contacts {
+  call: String
+  text: String
+  email: String
+  website: String
+}
+type ContactsResponse @aws_api_key{
+  call: String
+  text: String
+  email: String
+  website: String
+}
+
+input ProviderInput {
+  id: String
+  business_type: BusinessTypes
+  contact_name: String
+  comp_name: String
+  business_addr: String
+  phone_number: String
+  logo_url: String
+  contacts: [ContactsInput]
+  revenue_share: String
+  vendors: [String!]
+  ambassadors: [String]
+  clients: [String]
+  movingful_pay: Boolean
+  lead_source: ContactsInput
+  invite: Boolean
+  recommendations: String
+  customer_referral: Int
+  earnings: String
+  your_clients_rating: String
+  overall_rating: String
+  active: Boolean
+  isPercentage: Boolean
+  is_account_ready: Boolean
+}
+
+type Provider {
+  id: String
+  business_type: String
+  contact_name: String
+  comp_name: String
+  business_addr: String
+  phone_number: String
+  logo_url: String
+  contacts: [Contacts]
+  revenue_share: String
+  movingful_pay: Boolean
+  ambassadors: [Profile]
+  clients: [ClientType]
+  lead_source: Contacts
+  recommendations: String
+  created_at: String
+  updated_at: String
+  customer_referral: Int
+  earnings: String
+  your_clients_rating: String
+  overall_rating: String
+  active: Boolean
+  lead_spend: leadSpend
+  isPercentage: Boolean
+  is_account_ready: Boolean
+}
+
+type ProviderResponse @aws_api_key {
+  id: String
+  business_type: String
+  contact_name: String
+  comp_name: String
+  business_addr: String
+  phone_number: String
+  logo_url: String
+  contacts: [ContactsResponse]
+  revenue_share: String
+  movingful_pay: Boolean
+  ambassadors: [Profile]
+  clients: [ClientType]
+  lead_source: ContactsResponse
+  recommendations: String
+  created_at: String
+  updated_at: String
+  customer_referral: Int
+  earnings: String
+  your_clients_rating: String
+  overall_rating: String
+  active: Boolean
+  lead_spend: leadSpend
+  isPercentage: Boolean
+  is_account_ready: Boolean
+  added_date: String
+}
+
+type leadSpend {
+  total_count: String
+  total_amount: String
+  spends: [PayoutsHistory]
+}
+type leadSpendItem {
+  amount: String
+  ambassador: Profile
+  client: ClientType
+  provider: Provider
+}
+
+input ProfileInput {
+  id: String
+  first_name: String
+  last_name: String
+  comp_name: String
+  comp_addr: String
+  earnings: EarningsInput
+  vendors: [String]
+  clients: [String]
+  business_type: BusinessTypes
+  keep_my_commission: Boolean
+  is_account_ready: Boolean
+}
+
+type Specialist @aws_api_key {
+  name: String!
+  videoUrl: String
+  email: String
+  contact: String
+  thumbnail: String
+}
+
+type ClientReviews {
+  reviews: Reviews
+}
+
+type Reviews {
+  rating: Float
+  count: Int
+  consolidated_rating: [ConsolidatedRating]
+  customer_reviews: [CustomerReviews]
+}
+
+type ConsolidatedRating {
+  rating: Int
+  count: Int
+}
+
+type CustomerReviews {
+  provider: Provider
+  client: ClientType
+  created_at: String
+  rating: Float
+  comments: String
+}
+
+type PaymentLink {
+  payment_link: String
+}
+
+type BusinessText @aws_api_key{
+  display_name: String
+  tag_line: String
+  additional_text: String
+}

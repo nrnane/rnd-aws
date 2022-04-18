@@ -1,0 +1,19 @@
+dataSources:
+  - type: AMAZON_DYNAMODB
+    name: getProviders
+    description: "Get Providers Details"
+    config:
+      tableName: ${cf:movingful-dynamodb-${self:provider.stage}.VendorsTableName}
+      serviceRoleArn: { "Fn::GetAtt": [RnDAppSyncServiceRole, Arn] }
+  - type: AMAZON_DYNAMODB
+    name: getProvider
+    description: "Get Provider Details"
+    config:
+      tableName: ${cf:movingful-dynamodb-${self:provider.stage}.VendorsTableName}
+      serviceRoleArn: { "Fn::GetAtt": [RnDAppSyncServiceRole, Arn] }
+  - type: AMAZON_DYNAMODB
+    name: createReview
+    description: "Create review"
+    config:
+      tableName: ${cf:movingful-dynamodb-${self:provider.stage}.ReviewsTableName}
+      serviceRoleArn: { "Fn::GetAtt": [RnDAppSyncServiceRole, Arn] }

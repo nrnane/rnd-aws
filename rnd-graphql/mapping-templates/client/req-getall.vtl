@@ -1,0 +1,13 @@
+{
+    "version": "2017-02-28",
+    "operation": "Query",
+    "scanIndexForward": true,
+    "index" : "clients_createdby_index",
+    "select" : "ALL_ATTRIBUTES",
+    "query" : {
+        "expression" : "created_by = :created_by",
+        "expressionValues" : {
+            ":created_by" : $util.dynamodb.toDynamoDBJson("${ctx.identity.username}")
+        }
+    }
+}

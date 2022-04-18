@@ -1,0 +1,16 @@
+mappingTemplates:
+  - dataSource: createReview
+    type: Mutation
+    field: createReview
+    request: reviews/req.vtl
+    response: reviews/res.vtl
+  - dataSource: getProviders
+    type: Query
+    field: getProviders
+    request: provider/req-getall.vtl
+    response: provider/res-providers.vtl
+  - dataSource: getProvider
+    type: Query
+    field: getProvider
+    request: provider/req-get.vtl
+    response: provider/res-provider-single.vtl

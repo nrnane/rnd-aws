@@ -1,0 +1,34 @@
+
+    #if(!$context.result.revenue_share)
+        $util.qr($context.result.put("revenue_share", "0"))
+    #end
+    #if(!$context.result.earnings)
+        $util.qr($context.result.put("earnings", "0"))
+    #end
+    #if(!$context.result.overall_rating)
+        $util.qr($context.result.put("overall_rating", "0"))
+    #end
+    #if(!$context.result.your_clients_rating)
+        $util.qr($context.result.put("your_clients_rating", "0"))
+    #end
+    #if(!$context.result.active)
+        $util.qr($context.result.put("active", false))
+    #end
+     #if(!$context.result.recommendations)
+        $util.qr($context.result.put("recommendations", "0"))
+    #end
+    #if(!$context.result.movingful_pay)
+        $util.qr($context.result.put("movingful_pay", false))
+    #end
+    #if(!$context.result.customer_referral)
+        $util.qr($context.result.put("customer_referral", 0))
+    #end
+    #if(!$context.result.created_at)
+        $util.qr($context.result.put("created_at", ""))
+    #end
+    #if(!$context.result.business_addr)
+        $util.qr($context.result.put("business_addr", ""))
+    #end
+
+
+$util.toJson($context.result)
